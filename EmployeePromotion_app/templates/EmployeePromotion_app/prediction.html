@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Promotion Prediction</title>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #eef1f5;
+        margin: 0;
+        padding: 0;
+        color: #2b2b2b;
+    }
+
+    .navbar {
+        width: 98%;
+        background: #0a1f44;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    .navbar h1 {
+        margin: 0;
+        font-size: 20px;
+        color: white;
+    }
+
+    .navbar a {
+        color: white;
+        background: #133b7c;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.3s ease;
+        font-size: 14px;
+    }
+
+    .navbar a:hover {
+        background: #1e56a0;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 900px;
+        margin: 20px auto;
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px 25px;
+        box-shadow: 0 0 18px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+        text-align: center;
+        color: #0a1f44;
+        font-size: 26px;
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 30px;
+        row-gap: 20px;
+    }
+
+    @media screen and (max-width: 600px) {
+        form {
+            grid-template-columns: 1fr;
+        }
+        .container {
+            padding: 15px 18px;
+        }
+        h2 {
+            font-size: 22px;
+        }
+    }
+
+    label {
+        font-weight: 600;
+        color: #0a1f44;
+    }
+
+    input, select {
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 12px;
+        background: #f9fbfc;
+        color: #2b2b2b;
+        border: 1px solid #b7c3d4;
+        border-radius: 8px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input:focus, select:focus {
+        border-color: #0a1f44;
+        box-shadow: 0 0 8px rgba(10, 31, 68, 0.4);
+    }
+
+    .model-buttons {
+        grid-column: span 2;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 10px;
+    }
+
+    .model-btn {
+        padding: 10px 25px;
+        border-radius: 8px;
+        border: none;
+        background: #1e56a0;
+        color: white;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+        transition: 0.3s ease;
+    }
+
+    .model-btn:hover {
+        background: #0a1f44;
+    }
+
+    .selected-model {
+        background: green !important;
+    }
+
+    button[type="submit"] {
+        grid-column: span 2;
+        background: linear-gradient(90deg, #0a1f44, #1e56a0);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+        background: linear-gradient(90deg, #1e56a0, #0a1f44);
+    }
+
+    .popup-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 50, 0.2);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+    }
+
+    .popup-box {
+        background: #ffffff;
+        padding: 25px 30px;
+        border-radius: 12px;
+        width: 80%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 0 25px rgba(0,0,0,0.25);
+        animation: popup 0.3s ease-out;
+    }
+
+    @media screen and (max-width: 600px) {
+        .popup-box {
+            width: 90%;
+            padding: 20px 20px;
+        }
+    }
+
+    @keyframes popup {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .prediction-text {
+        font-size: 24px;
+        font-weight: 700;
+        color: #0a1f44;
+    }
+
+    .confidence-text {
+        font-size: 18px;
+        font-weight: 600;
+        margin-top: 8px;
+        color: #1e56a0;
+    }
+
+    .close-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #0a1f44;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .close-btn:hover {
+        background: #1e56a0;
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+    <h1>Promotion Predictor</h1>
+    <a href="{% url 'homepage' %}">Home</a>
+</div>
+
+<div class="container">
+    <h2>Employee Promotion Prediction</h2>
+
+    <form method="POST" action="{% url 'predict' %}">
+        {% csrf_token %}
+
+        
+
+        <!-- OTHER FORM FIELDS — SAME AS YOUR VERSION -->
+        <div>
+            <label>Department</label>
+            <select name="department" required>
+                <option value="">-- Select Department --</option>
+                <option value="Sales & Marketing">Sales & Marketing</option>
+                <option value="Operations">Operations</option>
+                <option value="Technology">Technology</option>
+                <option value="Analytics">Analytics</option>
+                <option value="R&D">R&D</option>
+                <option value="Procurement">Procurement</option>
+                <option value="Finance">Finance</option>
+                <option value="HR">HR</option>
+                <option value="Legal">Legal</option>
+            </select>
+        </div>
+
+<div>
+                <label>Region</label>
+                <select name="region" required>
+                    <option value="">-- Select Region --</option>
+                    <option value="region_1">Region 1</option>
+                    <option value="region_2">Region 2</option>
+                    <option value="region_3">Region 3</option>
+                    <option value="region_4">Region 4</option>
+                    <option value="region_5">Region 5</option>
+                    <option value="region_6">Region 6</option>
+                    <option value="region_7">Region 7</option>
+                    <option value="region_8">Region 8</option>
+                    <option value="region_9">Region 9</option>
+                    <option value="region_10">Region 10</option>
+                    <option value="region_11">Region 11</option>
+                    <option value="region_12">Region 12</option>
+                    <option value="region_13">Region 13</option>
+                    <option value="region_14">Region 14</option>
+                    <option value="region_15">Region 15</option>
+                    <option value="region_16">Region 16</option>
+                    <option value="region_17">Region 17</option>
+                    <option value="region_18">Region 18</option>
+                    <option value="region_19">Region 19</option>
+                    <option value="region_20">Region 20</option>
+                    <option value="region_21">Region 21</option>
+                    <option value="region_22">Region 22</option>
+                    <option value="region_23">Region 23</option>
+                    <option value="region_24">Region 24</option>
+                    <option value="region_25">Region 25</option>
+                    <option value="region_26">Region 26</option>
+                    <option value="region_27">Region 27</option>
+                    <option value="region_28">Region 28</option>
+                    <option value="region_29">Region 29</option>
+                    <option value="region_30">Region 30</option>
+                    <option value="region_31">Region 31</option>
+                    <option value="region_32">Region 32</option>
+                    <option value="region_33">Region 33</option>
+                    <option value="region_34">Region 34</option>
+                </select>
+            </div>
+
+
+        <div>
+            <label>Education</label>
+            <select name="education" required>
+                <option value="">-- Select --</option>
+                <option value="Master's & above">Master's & Above</option>
+                <option value="Bachelor's">Bachelor's</option>
+                <option value="Below Secondary">Below Secondary</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Gender</label>
+            <select name="gender" required>
+                <option value="">-- Select --</option>
+                <option value="f">Female</option>
+                <option value="m">Male</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Recruitment Channel</label>
+            <select name="recruitment_channel" required>
+                <option value="">-- Select --</option>
+                <option value="sourcing">Sourcing</option>
+                <option value="other">Other</option>
+                <option value="referred">Referred</option>
+            </select>
+        </div>
+
+        <div>
+            <label>No. of Trainings</label>
+            <input type="number" name="no_of_trainings" required>
+        </div>
+
+        <div>
+            <label>Age</label>
+            <input type="number" name="age" required>
+        </div>
+
+        <div>
+            <label>Previous Year Rating</label>
+            <select name="previous_year_rating" required>
+                <option value="">-- Select --</option>
+                <option value="1">1 - Poor</option>
+                <option value="2">2 - Fair</option>
+                <option value="3">3 - Good</option>
+                <option value="4">4 - Very Good</option>
+                <option value="5">5 - Excellent</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Length of Service (Years)</label>
+            <input type="number" name="length_of_service" required>
+        </div>
+
+        <div>
+            <label>Awards Won</label>
+            <input type="text" name="awards_won" required>
+        </div>
+
+        <div>
+            <label>Average Training Score</label>
+            <input type="number" name="avg_training_score" step="0.1" required>
+        </div>
+    <!-- hidden input to store selected model -->
+        <input type="hidden" id="model_type" name="model_type">
+
+        <!-- TWO BUTTONS FOR MODEL SELECTION -->
+        <div class="model-buttons">
+            <button type="button" class="model-btn" onclick="selectModel('xgboost', this)">XGBoost</button>
+            <button type="button" class="model-btn" onclick="selectModel('random_forest', this)">Random Forest</button>
+        </div>
+
+        <script>
+            function selectModel(model, btn) {
+                document.getElementById("model_type").value = model;
+
+                let buttons = document.querySelectorAll(".model-btn");
+                buttons.forEach(b => b.classList.remove("selected-model"));
+
+                btn.classList.add("selected-model");
+            }
+        </script>
+        <button type="submit">Predict Promotion</button>
+
+    </form>
+</div>
+
+{% if prediction %}
+<div class="popup-overlay" id="popup">
+    <div class="popup-box">
+        <div class="prediction-text">{{ prediction }}</div>
+        <button class="close-btn" onclick="closePopup()">OK</button>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    window.onload = function () {
+        const popup = document.getElementById("popup");
+        if (popup) popup.style.display = "flex";
+    };
+
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+</script>
+
+</body>
+</html>

@@ -11,7 +11,6 @@ def predict(request):
     if request.method == "POST":
         import joblib
         import pandas as pd
-        import numpy as np
 
         # --- Correct categorical mappings ---
         department_mapping = {
@@ -55,13 +54,8 @@ def predict(request):
         awards_won = int(request.POST['awards_won'])
         avg_training_score = float(request.POST['avg_training_score'])
 
-        # --- Model selection ---
-        selected_model = request.POST.get('model_type', 'xgboost')
-
-        if selected_model == 'random_forest':
-            model = joblib.load("ml_models/random_forest_model.pkl")
-        else:
-            model = joblib.load("ml_models/xgboost_model.pkl")
+        # --- Load ONLY XGBoost model ---
+        model = joblib.load("ml_models/xgboost_model.pkl")
 
         # --- Prepare dataframe ---
         columns = [
@@ -77,6 +71,7 @@ def predict(request):
         # --- Predict ---
         prediction = model.predict(features)[0]
 
+        # Decide result
         result = "Eligible for Promotion" if prediction == 1 else "Not Eligible for Promotion"
 
         return render(request, 'EmployeePromotion_app/prediction.html', {

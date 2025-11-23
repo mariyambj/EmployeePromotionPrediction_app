@@ -3,6 +3,7 @@
 <head>
   <title>Welcome - Employee Promotion Prediction</title>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% load static %}
 
   <style>
@@ -100,17 +101,26 @@
       transform: translateY(-2px);
     }
 
+    /* ==== TABLET VIEW ==== */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .container {
+        margin-left: 50px;
+      }
+    }
+
     /* ==== MOBILE VIEW ==== */
     @media (max-width: 768px) {
       body {
         justify-content: center;
-        background-size: 420px;
+        background-size: cover;
         background-position: center bottom;
         padding: 10px;
       }
 
       .container {
         width: 90%;
+        max-width: 450px;
+        margin-left: 0;
         padding: 30px 20px;
       }
 
@@ -118,7 +128,11 @@
         font-size: 24px;
       }
 
-      p {
+      p, .quote {
+        font-size: 15px;
+      }
+
+      .author {
         font-size: 15px;
       }
 
@@ -140,7 +154,7 @@
 
     <p>Harness the power of Machine Learning to predict employee promotion likelihood with high accuracy and smart insights.</p>
 
-    <p class="quote">“Clients do not come first. Employees come first. If you take care of your employees, they will take care of the clients.”</p>
+    <p class="quote">"Clients do not come first. Employees come first. If you take care of your employees, they will take care of the clients."</p>
 
     <p class="author">- Richard Branson</p>
 

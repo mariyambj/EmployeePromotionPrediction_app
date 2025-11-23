@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Employee Promotion Prediction</title>
+{% load static %}
 
 <style>
     body {
@@ -11,10 +14,17 @@
         margin: 0;
         padding: 0;
         color: #2b2b2b;
+        background-image: url("{% static 'EmployeePromotion_app/images/image2.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
     }
-
+    
     .navbar {
-        width: 98%;
+        /* Changed width to 100% and added box-sizing to prevent horizontal scrollbar */
+        width: 100%; 
+        box-sizing: border-box; 
         background: #0a1f44;
         padding: 15px 20px;
         display: flex;
@@ -38,20 +48,28 @@
         text-decoration: none;
         transition: 0.3s ease;
         font-size: 14px;
+        /* Added whitespace nowrap so the button text doesn't fold on small screens */
+        white-space: nowrap; 
     }
 
     .navbar a:hover {
         background: #1e56a0;
     }
 
+    /* UPDATED CONTAINER CSS */
     .container {
         width: 90%;
         max-width: 900px;
         margin: 20px auto;
-        background: #ffffff;
+        /* Transparency setting */
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(12px);
         border-radius: 16px;
         padding: 20px 25px;
         box-shadow: 0 0 18px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        /* Added box-sizing to ensure padding doesn't overflow width */
+        box-sizing: border-box; 
     }
 
     h2 {
@@ -68,15 +86,24 @@
         row-gap: 20px;
     }
 
+    /* MEDIA QUERY: This handles the mobile layout */
     @media screen and (max-width: 600px) {
         form {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr; /* Stacks inputs vertically */
         }
         .container {
             padding: 15px 18px;
+            width: 95%; /* Use more screen width on mobile */
+            margin-top: 10px;
         }
         h2 {
             font-size: 22px;
+        }
+        .navbar {
+            padding: 10px 15px; /* Smaller navbar padding on mobile */
+        }
+        .navbar h1 {
+            font-size: 18px; /* Smaller title on mobile */
         }
     }
 
@@ -89,7 +116,7 @@
         width: 100% !important;
         box-sizing: border-box;
         padding: 12px;
-        background: #f9fbfc;
+        background: rgba(249, 251, 252, 0.6); 
         color: #2b2b2b;
         border: 1px solid #b7c3d4;
         border-radius: 8px;
@@ -100,6 +127,7 @@
     input:focus, select:focus {
         border-color: #0a1f44;
         box-shadow: 0 0 8px rgba(10, 31, 68, 0.4);
+        background: #ffffff; 
     }
 
     button[type="submit"] {
@@ -112,6 +140,13 @@
         font-size: 16px;
         cursor: pointer;
     }
+    
+    /* Fix for button on mobile to span the full single column */
+    @media screen and (max-width: 600px) {
+        button[type="submit"] {
+            grid-column: span 1; 
+        }
+    }
 
     button[type="submit"]:hover {
         background: linear-gradient(90deg, #1e56a0, #0a1f44);
@@ -121,11 +156,12 @@
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background: rgba(0, 0, 50, 0.2);
+        background: rgba(0, 0, 50, 0.5); 
         display: none;
         justify-content: center;
         align-items: center;
         z-index: 999;
+        backdrop-filter: blur(5px); 
     }
 
     .popup-box {
@@ -165,9 +201,6 @@
         font-size: 14px;
     }
 </style>
-
-</style>
-
 </head>
 
 
@@ -184,7 +217,6 @@
     <form method="POST" action="{% url 'predict' %}">
         {% csrf_token %}
 
-        <!-- All Form Fields -->
         <div>
             <label>Department</label>
             <select name="department" required>
@@ -199,49 +231,48 @@
                 <option value="HR" {% if form_data.department == "HR" %}selected{% endif %}>HR</option>
                 <option value="Legal" {% if form_data.department == "Legal" %}selected{% endif %}>Legal</option>
             </select>
-
         </div>
 
-<div>
-                <label>Region</label>
-                <select name="region" required>
-                    <option value="">-- Select Region --</option>
-                    <option value="region_1" {% if form_data.region == "region_1" %}selected{% endif %}>Region 1</option>
-                    <option value="region_2" {% if form_data.region == "region_2" %}selected{% endif %}>Region 2</option>
-                    <option value="region_3" {% if form_data.region == "region_3" %}selected{% endif %}>Region 3</option>
-                    <option value="region_4" {% if form_data.region == "region_4" %}selected{% endif %}>Region 4</option>
-                    <option value="region_5" {% if form_data.region == "region_5" %}selected{% endif %}>Region 5</option>
-                    <option value="region_6" {% if form_data.region == "region_6" %}selected{% endif %}>Region 6</option>
-                    <option value="region_7" {% if form_data.region == "region_7" %}selected{% endif %}>Region 7</option>
-                    <option value="region_8" {% if form_data.region == "region_8" %}selected{% endif %}>Region 8</option>
-                    <option value="region_9" {% if form_data.region == "region_9" %}selected{% endif %}>Region 9</option>
-                    <option value="region_10" {% if form_data.region == "region_10" %}selected{% endif %}>Region 10</option>
-                    <option value="region_11" {% if form_data.region == "region_11" %}selected{% endif %}>Region 11</option>
-                    <option value="region_12" {% if form_data.region == "region_12" %}selected{% endif %}>Region 12</option>
-                    <option value="region_13" {% if form_data.region == "region_13" %}selected{% endif %}>Region 13</option>
-                    <option value="region_14" {% if form_data.region == "region_14" %}selected{% endif %}>Region 14</option>
-                    <option value="region_15" {% if form_data.region == "region_15" %}selected{% endif %}>Region 15</option>
-                    <option value="region_16" {% if form_data.region == "region_16" %}selected{% endif %}>Region 16</option>
-                    <option value="region_17" {% if form_data.region == "region_17" %}selected{% endif %}>Region 17</option>
-                    <option value="region_18" {% if form_data.region == "region_18" %}selected{% endif %}>Region 18</option>
-                    <option value="region_19" {% if form_data.region == "region_19" %}selected{% endif %}>Region 19</option>
-                    <option value="region_20" {% if form_data.region == "region_20" %}selected{% endif %}>Region 20</option>
-                    <option value="region_21" {% if form_data.region == "region_21" %}selected{% endif %}>Region 21</option>
-                    <option value="region_22" {% if form_data.region == "region_22" %}selected{% endif %}>Region 22</option>
-                    <option value="region_23" {% if form_data.region == "region_23" %}selected{% endif %}>Region 23</option>
-                    <option value="region_24" {% if form_data.region == "region_24" %}selected{% endif %}>Region 24</option>
-                    <option value="region_25" {% if form_data.region == "region_25" %}selected{% endif %}>Region 25</option>
-                    <option value="region_26" {% if form_data.region == "region_26" %}selected{% endif %}>Region 26</option>
-                    <option value="region_27" {% if form_data.region == "region_27" %}selected{% endif %}>Region 27</option>
-                    <option value="region_28" {% if form_data.region == "region_28" %}selected{% endif %}>Region 28</option>
-                    <option value="region_29" {% if form_data.region == "region_29" %}selected{% endif %}>Region 29</option>
-                    <option value="region_30" {% if form_data.region == "region_30" %}selected{% endif %}>Region 30</option>
-                    <option value="region_31" {% if form_data.region == "region_31" %}selected{% endif %}>Region 31</option>
-                    <option value="region_32" {% if form_data.region == "region_32" %}selected{% endif %}>Region 32</option>
-                    <option value="region_33" {% if form_data.region == "region_33" %}selected{% endif %}>Region 33</option>
-                    <option value="region_34" {% if form_data.region == "region_34" %}selected{% endif %}>Region 34</option>
-                </select>
-            </div>
+        <div>
+            <label>Region</label>
+            <select name="region" required>
+                <option value="">-- Select Region --</option>
+                <option value="region_1" {% if form_data.region == "region_1" %}selected{% endif %}>Region 1</option>
+                <option value="region_2" {% if form_data.region == "region_2" %}selected{% endif %}>Region 2</option>
+                <option value="region_3" {% if form_data.region == "region_3" %}selected{% endif %}>Region 3</option>
+                <option value="region_4" {% if form_data.region == "region_4" %}selected{% endif %}>Region 4</option>
+                <option value="region_5" {% if form_data.region == "region_5" %}selected{% endif %}>Region 5</option>
+                <option value="region_6" {% if form_data.region == "region_6" %}selected{% endif %}>Region 6</option>
+                <option value="region_7" {% if form_data.region == "region_7" %}selected{% endif %}>Region 7</option>
+                <option value="region_8" {% if form_data.region == "region_8" %}selected{% endif %}>Region 8</option>
+                <option value="region_9" {% if form_data.region == "region_9" %}selected{% endif %}>Region 9</option>
+                <option value="region_10" {% if form_data.region == "region_10" %}selected{% endif %}>Region 10</option>
+                <option value="region_11" {% if form_data.region == "region_11" %}selected{% endif %}>Region 11</option>
+                <option value="region_12" {% if form_data.region == "region_12" %}selected{% endif %}>Region 12</option>
+                <option value="region_13" {% if form_data.region == "region_13" %}selected{% endif %}>Region 13</option>
+                <option value="region_14" {% if form_data.region == "region_14" %}selected{% endif %}>Region 14</option>
+                <option value="region_15" {% if form_data.region == "region_15" %}selected{% endif %}>Region 15</option>
+                <option value="region_16" {% if form_data.region == "region_16" %}selected{% endif %}>Region 16</option>
+                <option value="region_17" {% if form_data.region == "region_17" %}selected{% endif %}>Region 17</option>
+                <option value="region_18" {% if form_data.region == "region_18" %}selected{% endif %}>Region 18</option>
+                <option value="region_19" {% if form_data.region == "region_19" %}selected{% endif %}>Region 19</option>
+                <option value="region_20" {% if form_data.region == "region_20" %}selected{% endif %}>Region 20</option>
+                <option value="region_21" {% if form_data.region == "region_21" %}selected{% endif %}>Region 21</option>
+                <option value="region_22" {% if form_data.region == "region_22" %}selected{% endif %}>Region 22</option>
+                <option value="region_23" {% if form_data.region == "region_23" %}selected{% endif %}>Region 23</option>
+                <option value="region_24" {% if form_data.region == "region_24" %}selected{% endif %}>Region 24</option>
+                <option value="region_25" {% if form_data.region == "region_25" %}selected{% endif %}>Region 25</option>
+                <option value="region_26" {% if form_data.region == "region_26" %}selected{% endif %}>Region 26</option>
+                <option value="region_27" {% if form_data.region == "region_27" %}selected{% endif %}>Region 27</option>
+                <option value="region_28" {% if form_data.region == "region_28" %}selected{% endif %}>Region 28</option>
+                <option value="region_29" {% if form_data.region == "region_29" %}selected{% endif %}>Region 29</option>
+                <option value="region_30" {% if form_data.region == "region_30" %}selected{% endif %}>Region 30</option>
+                <option value="region_31" {% if form_data.region == "region_31" %}selected{% endif %}>Region 31</option>
+                <option value="region_32" {% if form_data.region == "region_32" %}selected{% endif %}>Region 32</option>
+                <option value="region_33" {% if form_data.region == "region_33" %}selected{% endif %}>Region 33</option>
+                <option value="region_34" {% if form_data.region == "region_34" %}selected{% endif %}>Region 34</option>
+            </select>
+        </div>
 
         <div>
             <label>Education</label>
@@ -251,7 +282,6 @@
                 <option value="Bachelor's" {% if form_data.education == "Bachelor's" %}selected{% endif %}>Bachelor's</option>
                 <option value="Below Secondary" {% if form_data.education == "Below Secondary" %}selected{% endif %}>Below Secondary</option>
             </select>
-
         </div>
 
         <div>
@@ -261,7 +291,6 @@
                 <option value="f" {% if form_data.gender == "f" %}selected{% endif %}>Female</option>
                 <option value="m" {% if form_data.gender == "m" %}selected{% endif %}>Male</option>
             </select>
-
         </div>
 
         <div>
@@ -272,13 +301,11 @@
                 <option value="other" {% if form_data.recruitment_channel == "other" %}selected{% endif %}>Other</option>
                 <option value="referred" {% if form_data.recruitment_channel == "referred" %}selected{% endif %}>Referred</option>
             </select>
-
         </div>
 
         <div>
             <label>No. of Trainings</label>
             <input type="number" name="no_of_trainings" value="{{ form_data.no_of_trainings }}">
-
         </div>
 
         <div>
@@ -287,7 +314,6 @@
             {% if errors.age %}
             <small class="text-danger"><i>{{ errors.age }}</i></small>
             {% endif %}
-
         </div>
 
         <div>
@@ -319,10 +345,8 @@
             {% if errors.avg_training_score %}
             <small class="text-danger"><i>{{ errors.avg_training_score }}</i></small>
             {% endif %}
-
         </div>
 
-        <!-- PREDICT BUTTON -->
         <button type="submit">Predict Promotion</button>
 
     </form>

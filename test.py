@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, classificat
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
-# 1️⃣ Load test dataset
+# 1️ Load test dataset
 TEST_PATH = "Dataset/test.csv"
 if not os.path.exists(TEST_PATH):
     raise FileNotFoundError(f"❌ Test file not found: {TEST_PATH}")
@@ -13,11 +13,11 @@ if not os.path.exists(TEST_PATH):
 test_data = pd.read_csv(TEST_PATH)
 print("✅ Test data loaded successfully. Shape:", test_data.shape)
 
-# 2️⃣ Split features and target
+# 2️ Split features and target
 X_test = test_data.drop("is_promoted", axis=1)
 y_test = test_data["is_promoted"]
 
-# 3️⃣ Load trained models
+# 3️ Load trained models
 MODEL_DIR = "ml_models"
 rf_model_path = os.path.join(MODEL_DIR, "random_forest_model.pkl")
 xgb_model_path = os.path.join(MODEL_DIR, "xgboost_model.pkl")
@@ -29,7 +29,7 @@ rf_model = joblib.load(rf_model_path)
 xgb_model = joblib.load(xgb_model_path)
 print("✅ Models loaded successfully!")
 
-# 4️⃣ Define evaluation function
+# 4️ Define evaluation function
 def evaluate_model(model, X, y, name):
     y_pred = model.predict(X)
     y_prob = model.predict_proba(X)[:, 1]
@@ -65,11 +65,11 @@ def evaluate_model(model, X, y, name):
         })
     }
 
-# 5️⃣ Evaluate both models
+# 5️ Evaluate both models
 rf_results = evaluate_model(rf_model, X_test, y_test, "Random Forest")
 xgb_results = evaluate_model(xgb_model, X_test, y_test, "XGBoost")
 
-# 6️⃣ Merge results for predictions with confidence
+# 6️ Merge results for predictions with confidence
 merged = pd.concat([
     rf_results["predictions"],
     xgb_results["predictions"][[f"XGBoost_Predicted", f"XGBoost_Confidence"]]
@@ -83,7 +83,7 @@ print(merged.head(20))  # show first 20 for readability
 merged.to_csv("Dataset/test_predictions_with_confidence.csv", index=False)
 print("\n✅ Predictions with confidence saved as 'Dataset/test_predictions_with_confidence.csv'")
 
-# 7️⃣ Model Comparison Summary
+# 7️Model Comparison Summary
 comparison = pd.DataFrame({
     "Model": ["Random Forest", "XGBoost"],
     "Accuracy": [rf_results["accuracy"], xgb_results["accuracy"]],
@@ -92,7 +92,7 @@ comparison = pd.DataFrame({
 })
 print("\n✅ Model Comparison:\n", comparison)
 
-# 8️⃣ Plot ROC curves together
+# Plot ROC curves together
 plt.figure(figsize=(8, 6))
 
 # Random Forest ROC
